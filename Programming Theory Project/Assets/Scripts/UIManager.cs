@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using UnityEditor.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
@@ -28,5 +29,9 @@ public class UIManager : MonoBehaviour
         } else{
             startButton.interactable = false;
         }
+    }
+
+    public void changeLevel(int numLevel){
+        EditorSceneManager.LoadScene(numLevel);
     }
 }
