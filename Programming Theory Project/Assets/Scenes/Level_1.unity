@@ -978,7 +978,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 9903cb760cb683541b036c84e79e908a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1041,6 +1041,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationSpeed: 10
+  materialScrollSpeed: 0.1
   steps:
   - {fileID: 9134946294244912112, guid: 16601a39ea6f8cc4f9cb0f45a5ede39b, type: 3}
   - {fileID: 9134946294244912112, guid: a330a56301db9064ab38b5469b2a1593, type: 3}
@@ -1049,7 +1050,7 @@ MonoBehaviour:
   - {fileID: 9134946294244912112, guid: 980cabc09a49a694db030654ff0e10cd, type: 3}
   player: {fileID: 1175348289}
   stepSpawnTime: 3
-  trapSpawnTime: 10
+  trapSpawnTime: 20
   difficultyIncreaseTimer: 10
   gameOverUI: {fileID: 670350222581318638, guid: 136a954969f9ebe48875830e0f11764e, type: 3}
 --- !u!1001 &1399766299
