@@ -12,9 +12,18 @@ public class StepController : MonoBehaviour
         towerBehavior = GameObject.Find("Tower").GetComponent<TowerBehavior>();
     }
 
-    // Update is called once per frame
-    void Update()
+    // ENCAPSULATION
+    protected virtual void Update()
     {
-        gameObject.transform.Translate(Vector3.down * speed * (towerBehavior.getSpeed()/10) * Time.deltaTime);
+        if (!towerBehavior.getGameOverStatus()){
+            gameObject.transform.Translate(
+                Vector3.down * speed * (towerBehavior.getSpeed()/10) * Time.deltaTime);
+        }
+    }
+
+    void OnTriggerEnter(Collider other){
+        if (other.CompareTag("DeathZone")){
+            Destroy(gameObject);
+        }
     }
 }

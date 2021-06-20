@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 9134946294244912109}
   - component: {fileID: 9134946294244912114}
   - component: {fileID: 204875114674818131}
+  - component: {fileID: -388702002138177663}
   m_Layer: 0
   m_Name: StepSmall
   m_TagString: Ground
@@ -109,3 +110,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 0.1
+  towerBehavior: {fileID: 0}
+--- !u!54 &-388702002138177663
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9134946294244912112}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0

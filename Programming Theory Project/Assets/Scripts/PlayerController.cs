@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour
     public bool canDoubleJump = true;
     public int jumpTimes = 2;
     private TowerBehavior towerBehavior;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -22,13 +23,12 @@ public class PlayerController : MonoBehaviour
     }
 
     void OnTriggerEnter(Collider other){
-        Debug.Log("Player Died");
         if (other.CompareTag("DeathZone")){
             towerBehavior.setGameOver();
+            Destroy(gameObject);
         }
     }
     void OnCollisionEnter(Collision other){
-        Debug.Log("Something collided");
         //if (other.CompareTag("Ground")){
             isGrounded = true;
             canDoubleJump = true;
@@ -46,12 +46,6 @@ public class PlayerController : MonoBehaviour
         }
         float movement = Input.GetAxis("Horizontal") * speed * rightCorrection * Time.deltaTime * -1;
         transform.Rotate(0, movement, 0);
-        /*if (transform.localEulerAngles.y > 75){
-            transform.rotation = Quaternion.Euler(0, 74, 0);
-        }
-        if (transform.localEulerAngles.y < -75){
-            transform.rotation = Quaternion.Euler(0, -74, 0);
-        }*/
         
         if (Input.GetKeyDown("space")){
             
