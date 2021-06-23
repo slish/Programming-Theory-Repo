@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -12,14 +14,27 @@ public class PlayerController : MonoBehaviour
     public bool canDoubleJump = true;
     public int jumpTimes = 2;
     private TowerBehavior towerBehavior;
+    public TMP_Text playerScoreText;
+    public TMP_Text scorePopUp;
+    public ParticleSystem coinParticles;
 
     // Start is called before the first frame update
     void Start()
-    {
+    {   
+        GameManager.Instance.ResetScore();
         Rigidbody rb = this.GetComponent<Rigidbody>();
         rb.centerOfMass = new Vector3(0,0,0);
         rb.inertiaTensorRotation = Quaternion.identity;
         towerBehavior = GameObject.Find("Tower").GetComponent<TowerBehavior>();
+        StartCoroutine(constantScore());
+    }
+
+    private IEnumerator constantScore(){
+        while (!towerBehavior.getGameOverStatus()){
+            GameManager.Instance.AddScore(towerBehavior.getSpeed());
+            playerScoreText.SetText("Score : " + GameManager.Instance.GetScore());
+            yield return new WaitForSeconds(2);
+        }
     }
 
     void OnTriggerEnter(Collider other){
@@ -27,13 +42,23 @@ public class PlayerController : MonoBehaviour
             towerBehavior.setGameOver();
             Destroy(gameObject);
         }
+        if (other.CompareTag("Coin")){
+            CoinController coin = other.gameObject.GetComponent<CoinController>();
+            float score = coin.GetValue();
+            scorePopUp.SetText(score.ToString());
+            Instantiate(coinParticles, other.transform.position, coinParticles.transform.rotation);
+            Instantiate(scorePopUp, other.transform.position, scorePopUp.transform.rotation);
+            GameManager.Instance.AddScore(score);
+            playerScoreText.SetText("Score : " + GameManager.Instance.GetScore());
+            Destroy(other.gameObject);
+        }
     }
     void OnCollisionEnter(Collision other){
-        //if (other.CompareTag("Ground")){
+        if (other.gameObject.CompareTag("Ground")){
             isGrounded = true;
             canDoubleJump = true;
             jumpTimes = 2;
-        //}
+        }
     }
 
     // Update is called once per frame

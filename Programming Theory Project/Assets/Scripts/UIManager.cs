@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
-using UnityEditor.SceneManagement;
+//using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
+
 
 public class UIManager : MonoBehaviour
 {
@@ -12,7 +14,8 @@ public class UIManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        playerNameInputField.Select();
+        playerNameInputField.ActivateInputField();
     }
 
     // Update is called once per frame
@@ -24,14 +27,9 @@ public class UIManager : MonoBehaviour
     public void updatePlayerName() {
         GameManager.Instance.setPlayerName(playerNameInputField.text);
         if (!string.IsNullOrEmpty(GameManager.Instance.getPlayerName())){
-            Debug.Log(GameManager.Instance.getPlayerName());
             startButton.interactable = true;
         } else{
             startButton.interactable = false;
         }
-    }
-
-    public void changeLevel(int numLevel){
-        EditorSceneManager.LoadScene(numLevel);
     }
 }
