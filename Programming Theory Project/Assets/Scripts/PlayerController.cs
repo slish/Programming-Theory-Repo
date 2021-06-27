@@ -7,9 +7,14 @@ using UnityEngine.UI;
 public class PlayerController : MonoBehaviour
 {
     public float speed;
-    public Rigidbody playerRb;
+    public float zSpeed;
+    //public Rigidbody playerRb;
+    public GameObject playerModel;
+    public GameObject camera;
+    private Rigidbody playerModelRb;
+    private GroundChecker groundCheck;
     public float jumpForce;
-    public float rightCorrection = 1.2f;
+    public float rightCorrection;
     public bool isGrounded = true;
     public bool canDoubleJump = true;
     public int jumpTimes = 2;
@@ -22,10 +27,14 @@ public class PlayerController : MonoBehaviour
     void Start()
     {   
         GameManager.Instance.ResetScore();
-        Rigidbody rb = this.GetComponent<Rigidbody>();
-        rb.centerOfMass = new Vector3(0,0,0);
-        rb.inertiaTensorRotation = Quaternion.identity;
-        towerBehavior = GameObject.Find("Tower").GetComponent<TowerBehavior>();
+        playerModelRb = playerModel.GetComponent<Rigidbody>();
+        groundCheck = playerModel.GetComponent<GroundChecker>();
+        playerModelRb.centerOfMass = Vector3.zero;
+        playerModelRb.inertiaTensorRotation = Quaternion.identity;
+        //Rigidbody rb = this.GetComponent<Rigidbody>();
+        //rb.centerOfMass = new Vector3(0,0,0);
+        //rb.inertiaTensorRotation = Quaternion.identity;
+        towerBehavior = GameObject.Find("Rotator").GetComponent<TowerBehavior>();
         StartCoroutine(constantScore());
     }
 
@@ -37,52 +46,90 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void TriggerDeath(){
+        towerBehavior.setGameOver();
+        Destroy(gameObject);
+    }
+
+    public void PickUpCoin(CoinController coin, Vector3 coinPosition){
+        //CoinController coin = other.gameObject.GetComponent<CoinController>();
+        float score = coin.GetValue();
+        scorePopUp.SetText(score.ToString());
+        Instantiate(coinParticles, coinPosition, coinParticles.transform.rotation);
+        Instantiate(scorePopUp, coinPosition, scorePopUp.transform.rotation);
+        GameManager.Instance.AddScore(score);
+        playerScoreText.SetText("Score : " + GameManager.Instance.GetScore());
+        Destroy(coin.gameObject);
+    }
     void OnTriggerEnter(Collider other){
         if (other.CompareTag("DeathZone")){
-            towerBehavior.setGameOver();
-            Destroy(gameObject);
+            
         }
         if (other.CompareTag("Coin")){
-            CoinController coin = other.gameObject.GetComponent<CoinController>();
-            float score = coin.GetValue();
-            scorePopUp.SetText(score.ToString());
-            Instantiate(coinParticles, other.transform.position, coinParticles.transform.rotation);
-            Instantiate(scorePopUp, other.transform.position, scorePopUp.transform.rotation);
-            GameManager.Instance.AddScore(score);
-            playerScoreText.SetText("Score : " + GameManager.Instance.GetScore());
-            Destroy(other.gameObject);
+            
         }
     }
-    void OnCollisionEnter(Collision other){
+    /*void OnCollisionEnter(Collision other){
         if (other.gameObject.CompareTag("Ground")){
             isGrounded = true;
             canDoubleJump = true;
             jumpTimes = 2;
         }
-    }
+    }*/
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetAxis("Horizontal")<0){
-            rightCorrection = 1f;
+        if(groundCheck.IsGrounded()){
+            isGrounded = true;
         }else{
-            rightCorrection = 1.2f * towerBehavior.getSpeed()/20;
+            isGrounded = false;
         }
-        float movement = Input.GetAxis("Horizontal") * speed * rightCorrection * Time.deltaTime * -1;
+        // Rotation of the player
+        float movement = 0;
+        //Debug.Log(transform.eulerAngles.y + towerBehavior.transform.eulerAngles.y);
+        //Debug.Log(camera.transform.eulerAngles.y);
+        if(camera.transform.eulerAngles.y > 332
+           || camera.transform.eulerAngles.y < 28){
+                if (Input.GetAxis("Horizontal")<0){
+                    movement = 
+                    Input.GetAxis("Horizontal") * speed * Time.deltaTime * -1;
+                }else {
+                    rightCorrection = towerBehavior.getSpeed() * Time.deltaTime;
+                    movement = 
+                        Input.GetAxis("Horizontal") * speed * Time.deltaTime * -1 - 
+                        (rightCorrection * Input.GetAxis("Horizontal"));
+                }
+                
+        }else if(camera.transform.eulerAngles.y > 332){
+            rightCorrection = towerBehavior.getSpeed() * Time.deltaTime;
+                movement = 
+                    Input.GetAxis("Horizontal") * speed * Time.deltaTime * -1 - 
+                    (rightCorrection * Input.GetAxis("Horizontal"));
+        }
+        if(camera.transform.eulerAngles.y > 28 && camera.transform.eulerAngles.y < 29){
+            transform.Rotate(0,-towerBehavior.getSpeed()*Time.deltaTime*1.05f,0);
+        }
         transform.Rotate(0, movement, 0);
+
+        // Back and forth movement
+        /*float zMovement = zSpeed * Input.GetAxis("Vertical")*Time.deltaTime;
+        Debug.Log(zMovement);
+        playerModelRb.AddRelativeForce(0, 0, zMovement, ForceMode.Impulse);  */      
         
         if (Input.GetKeyDown("space")){
             
-            if (isGrounded){
-                isGrounded = false;
+            if (groundCheck.IsGrounded()){
+                groundCheck.setGrounded(false);
+                //isGrounded = false;
                 Jump();
             } else {
-                if (canDoubleJump){
-                    canDoubleJump = false;
-                    Vector3 velocity = playerRb.velocity;
+                if (groundCheck.DoubleJump()){
+                    groundCheck.SetDoubleJump(false);
+                    //canDoubleJump = false;
+                    Vector3 velocity = playerModelRb.velocity;
                     velocity.y = 0;
-                    playerRb.velocity = velocity;
+                    playerModelRb.velocity = velocity;
                     Jump();
                 }
             }
@@ -91,7 +138,15 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    void LateUpdate(){
+        /*var lookPos = Vector3.zero - playerModel.transform.position;
+        lookPos.y = 0;
+        var playerRotation = Quaternion.LookRotation(lookPos);
+        playerModel.transform.rotation = Quaternion.Slerp(playerModel.transform.rotation, playerRotation, Time.deltaTime);
+        playerModel.transform.LookAt(Vector3.zero);*/
+    }
+
     void Jump(){
-        playerRb.AddForce(0, jumpForce, 0, ForceMode.Impulse);
+        playerModelRb.AddForce(0, jumpForce, 0, ForceMode.Impulse);
     }
 }

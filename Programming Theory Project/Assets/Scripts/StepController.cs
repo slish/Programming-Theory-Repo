@@ -9,15 +9,15 @@ public class StepController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        towerBehavior = GameObject.Find("Tower").GetComponent<TowerBehavior>();
+        towerBehavior = GameObject.Find("Rotator").GetComponent<TowerBehavior>();
     }
 
     // ENCAPSULATION
     protected virtual void Update()
     {
         if (!towerBehavior.getGameOverStatus()){
-            gameObject.transform.Translate(
-                Vector3.down * speed * (towerBehavior.getSpeed()/10) * Time.deltaTime);
+            //gameObject.transform.Translate(
+            //    Vector3.down * speed * (towerBehavior.getSpeed()/10) * Time.deltaTime);
         }
     }
 

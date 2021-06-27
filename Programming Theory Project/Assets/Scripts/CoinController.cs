@@ -10,17 +10,14 @@ public class CoinController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        towerBehavior = GameObject.Find("Tower").GetComponent<TowerBehavior>();
+        towerBehavior = GameObject.Find("Rotator").GetComponent<TowerBehavior>();
         coinValue = (towerBehavior.getSpeed()*3);
     }
 
     // ENCAPSULATION
     protected virtual void Update()
     {
-        if (!towerBehavior.getGameOverStatus()){
-            gameObject.transform.Translate(
-                Vector3.down * speed * (towerBehavior.getSpeed()/10) * Time.deltaTime);
-        }
+        
     }
 
     void OnTriggerEnter(Collider other){

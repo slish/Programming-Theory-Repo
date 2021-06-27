@@ -11,7 +11,7 @@ public class LiftStepController : StepController
 
     void Start()
     {
-        towerBehavior = GameObject.Find("Tower").GetComponent<TowerBehavior>();
+        towerBehavior = GameObject.Find("Rotator").GetComponent<TowerBehavior>();
         StartCoroutine(liftRoutine());
     }
 
@@ -32,9 +32,4 @@ public class LiftStepController : StepController
         }
     }
 
-    void OnTriggerEnter(Collider other){
-        if (other.CompareTag("Trap")){
-            Destroy(gameObject);
-        }
-    }
 }
